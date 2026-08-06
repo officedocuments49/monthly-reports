@@ -13,12 +13,12 @@ os.makedirs(UPLOAD_DIR, exist_ok=True)
 
 # ক্যাটাগরির তালিকা
 CATEGORIES = [
-    "Monthly Report", 
-    "Annual Report", 
-    "Project Report", 
-    "Audit Report", 
-    "Vouchers & Bills",
-    "Other Documents"
+    "ক্ষুদ্র ঋন", 
+    "মাতৃকেন্দ্র", 
+    "প্রতিবন্ধী", 
+    "দৈনন্দিন খরচ", 
+    "পার্সোনাল ফাইল",
+    "অন্যান্য ডকুমেন্টস"
 ]
 
 st.title("📁 ফাইল ও রিপোর্ট ম্যানেজমেন্ট পোর্টাল")
