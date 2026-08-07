@@ -1,8 +1,6 @@
 import base64
 import json
 import os
-import docx
-import pandas as pd
 import streamlit as st
 
 # --- পেজ সেটআপ ---
@@ -12,24 +10,24 @@ st.set_page_config(
     layout="wide"
 )
 
-# ডাটাবেস ফাইল পাথ (গিটহাব রিপোজিটরিতে সেভ থাকবে)
+# ডাটাবেস ফাইল
 DB_FILE = "office_data.json"
 
-# ডাটাবেস লোড বা তৈরি করার ফাংশন
 def load_data():
     if os.path.exists(DB_FILE):
-        with open(DB_FILE, "r", encoding="utf-8") as f:
-            return json.load(f)
+        try:
+            with open(DB_FILE, "r", encoding="utf-8") as f:
+                return json.load(f)
+        except Exception:
+            return {}
     return {}
 
 def save_data(data):
     with open(DB_FILE, "w", encoding="utf-8") as f:
         json.dump(data, f, ensure_ascii=False, indent=4)
 
-# বর্তমান ডাটা লোড
 office_db = load_data()
 
-# --- সেশন স্টেট ---
 if 'selected_cat_key' not in st.session_state:
     st.session_state.selected_cat_key = "job"
 
@@ -114,7 +112,6 @@ current_name = cat_names[current_key]
 
 st.success(f"📌 আপনি বর্তমানে নির্বাচিত করেছেন: **{current_name}**")
 
-# ট্যাব তৈরি (সংরক্ষিত ফাইল দেখা ও নতুন ফাইল আপলোড করা)
 tab1, tab2 = st.tabs(["📂 এই ক্যাটাগরির সংরক্ষিত ফাইলসমূহ", "📤 নতুন ফাইল সেভ / আপলোড করুন"])
 
 # --- ট্যাব ১: সেভ করা ফাইল দেখার জায়গা ---
@@ -125,18 +122,33 @@ with tab1:
         saved_items = office_db[current_key]
         for idx, item in enumerate(saved_items):
             with st.expander(f"📄 {item['title']} ({item['month']} {item['year']})"):
+                st.write(f"**নথির নাম:** {item.get('file_name', 'অজ্ঞাত ফাইল')}")
                 st.write(f"**বিবরণ/নোট:** {item.get('note', 'কোনো নোট নেই')}")
                 
-                # পিডিএফ / ফাইল ভিউ
+                # ফাইল ডেটা ও ডাউনলোড
                 if "file_data" in item:
-                    b64_data = item["file_data"]
-                    f_type = item["file_type"]
-                    
-                    if f_type == "pdf":
-                        pdf_display = f'<iframe src="data:application/pdf;base64,{b64_data}" width="100%" height="600" type="application/pdf"></iframe>'
-                        st.markdown(pdf_display, unsafe_allow_html=True)
-                    else:
-                        st.info("অনলাইন ভিউ শুধুমাত্র PDF ফাইলের জন্য প্রযোজ্য।")
+                    try:
+                        file_bytes = base64.b64decode(item["file_data"])
+                        f_type = item.get("file_type", "pdf")
+                        
+                        # ১. সরাসরি ডাউনলোড বাটন
+                        st.download_button(
+                            label=f"📥 {item['title']} ফাইলটি ডাউনলোড করুন",
+                            data=file_bytes,
+                            file_name=item.get('file_name', 'document.pdf'),
+                            mime=f"application/{f_type}",
+                            key=f"dl_{current_key}_{idx}"
+                        )
+                        
+                        st.markdown("---")
+                        
+                        # ২. PDF প্রিভিউ দেখার চেষ্টা (ব্রাউজার সাপোর্ট করলে নিচে দেখাবে)
+                        if f_type == "pdf":
+                            st.caption("👁️ নিচে ফাইল প্রিভিউ দেখুন (যদি আপনার ব্রাউজার সাপোর্ট করে):")
+                            pdf_display = f'<embed src="data:application/pdf;base64,{item["file_data"]}" width="100%" height="500" type="application/pdf">'
+                            st.markdown(pdf_display, unsafe_allow_html=True)
+                    except Exception:
+                        st.error("ফাইলটি লোড করতে সমস্যা হয়েছে।")
     else:
         st.warning("এই ক্যাটাগরিতে এখনো কোনো ফাইল বা তথ্য জমা রাখা হয়নি। 'নতুন ফাইল সেভ / আপলোড করুন' ট্যাবে গিয়ে ফাইল যোগ করুন।")
 
@@ -152,7 +164,7 @@ with tab2:
         year = st.selectbox("বছর", [2026, 2025, 2024])
         
     doc_note = st.text_area("অতিরিক্ত কোনো বিবরণ বা সারসংক্ষেপ (ঐচ্ছিক)")
-    uploaded_file = st.file_uploader("ফাইলটি নির্বাচন করুন (PDF বা Excel)", type=["pdf", "xlsx", "xls"])
+    uploaded_file = st.file_uploader("ফাইলটি নির্বাচন করুন (PDF, Word বা Excel)", type=["pdf", "xlsx", "xls", "docx"])
     
     if st.button("💾 ফাইল ও তথ্য স্থায়ীভাবে সেভ করুন"):
         if doc_title and uploaded_file is not None:
@@ -176,7 +188,7 @@ with tab2:
             office_db[current_key].append(new_entry)
             save_data(office_db)
             
-            st.success(f"✅ '{doc_title}' সফলভাবে সেভ করা হয়েছে! এখন থেকে এই ক্যাটাগরিতে ক্লিক করলেই ফাইলটি পাওয়া যাবে।")
-            st.rerun()  # সংশোধিত লাইন (st.experimental_rerun এর পরিবর্তে st.rerun)
+            st.success(f"✅ '{doc_title}' সফলভাবে সেভ করা হয়েছে!")
+            st.rerun()
         else:
             st.error("অনুগ্রহ করে নথির শিরোনাম লিখুন এবং একটি ফাইল নির্বাচন করুন।")
