@@ -11,7 +11,7 @@ st.set_page_config(
     layout="wide"
 )
 
-# --- কাস্টম সিএসএস স্টাইলিং (সরকারী ওয়েবসাইটের মতো ইন্টারফেস) ---
+# --- কাস্টম সিএসএস স্টাইলিং ---
 st.markdown("""
     <style>
     .main-header {
@@ -22,15 +22,6 @@ st.markdown("""
         text-align: center;
         border-bottom: 4px solid #f42a41;
         margin-bottom: 15px;
-    }
-    .top-bar {
-        background-color: #f0f2f6;
-        padding: 8px 15px;
-        border-radius: 5px;
-        font-size: 14px;
-        font-weight: bold;
-        color: #333;
-        margin-bottom: 10px;
     }
     .notice-board {
         background-color: #fff3cd;
@@ -51,7 +42,7 @@ st.markdown("""
     </style>
 """, unsafe_allow_html=True)
 
-# --- টপ হেডার (গণপ্রজাতন্ত্রী বাংলাদেশ সরকার / সমাজসেবা অধিদপ্তর) ---
+# --- টপ হেডার ---
 st.markdown("""
     <div class="main-header">
         <h3 style="margin:0; color:#fff;">গণপ্রজাতন্ত্রী বাংলাদেশ সরকার</h3>
@@ -60,7 +51,7 @@ st.markdown("""
     </div>
 """, unsafe_allow_html=True)
 
-# --- সাইডবার মেনু (জাতীয় বাতায়নের প্রধান নেভিগেশন) ---
+# --- সাইডবার মেনু ---
 st.sidebar.image("https://upload.wikimedia.org/wikipedia/commons/8/84/Government_Seal_of_Bangladesh.svg", width=90)
 st.sidebar.title("📌 প্রধান মেনু")
 st.sidebar.markdown("---")
@@ -79,14 +70,10 @@ selected_menu = st.sidebar.radio(
 st.sidebar.markdown("---")
 st.sidebar.info("💡 **জরুরি কল:** ৩৩৩ (সরকারি তথ্য ও সেবা) | ১০৯৮ (শিশু সহায়তা)")
 
-# বর্তমান তারিখ ও সময়
-today_str = datetime.now().strftime("%d-%m-%Y")
-
 # ==========================================
 # ১. হোম / এক নজরে
 # ==========================================
 if selected_menu == "🏠 হোম / এক নজরে":
-    # খবর/নোটিশ স্ক্রোলার
     st.markdown("""
         <div class="notice-board">
             <b>📢 সর্বশেষ সংবাদ / নোটিশ:</b> সমাজসেবা অধিদপ্তরের সব ধরণের অফিসিয়াল ফাইল, অডিট রিপোর্ট ও ফরওয়ার্ডিং লেটার সরাসরি আপলোড ও ভিউ সিস্টেম চালু করা হয়েছে।
@@ -97,13 +84,13 @@ if selected_menu == "🏠 হোম / এক নজরে":
     
     col1, col2, col3, col4 = st.columns(4)
     with col1:
-        st.markdown("<div class="card-box"><h4>অডিট রিপোর্ট</h4><h2 style="color:#006a4e;">১২ টি</h2></div>", unsafe_allow_html=True)
+        st.markdown('<div class="card-box"><h4>অডিট রিপোর্ট</h4><h2 style="color:#006a4e;">১২ টি</h2></div>', unsafe_allow_html=True)
     with col2:
-        st.markdown("<div class="card-box"><h4>ফরওয়ার্ডিং চিঠি</h4><h2 style="color:#006a4e;">৪৫ টি</h2></div>", unsafe_allow_html=True)
+        st.markdown('<div class="card-box"><h4>ফরওয়ার্ডিং চিঠি</h4><h2 style="color:#006a4e;">৪৫ টি</h2></div>', unsafe_allow_html=True)
     with col3:
-        st.markdown("<div class="card-box"><h4>মাসিক অগ্রগতি</h4><h2 style="color:#006a4e;">৮ টি</h2></div>", unsafe_allow_html=True)
+        st.markdown('<div class="card-box"><h4>মাসিক অগ্রগতি</h4><h2 style="color:#006a4e;">৮ টি</h2></div>', unsafe_allow_html=True)
     with col4:
-        st.markdown("<div class="card-box"><h4>অন্যান্য নথি</h4><h2 style="color:#006a4e;">২৩ টি</h2></div>", unsafe_allow_html=True)
+        st.markdown('<div class="card-box"><h4>অন্যান্য নথি</h4><h2 style="color:#006a4e;">২৩ টি</h2></div>', unsafe_allow_html=True)
 
     st.markdown("---")
     st.markdown("### 📋 প্রধান সেবাসমূহ (ই-সেবা বাতায়ন)")
@@ -123,7 +110,6 @@ elif selected_menu == "📂 ফাইল ভিউয়ার ও আপলো�
     st.subheader("📂 অফিস নথি আপলোড ও সরাসরি ভিউয়ার")
     st.caption("Excel, Word, অথবা PDF ফাইল আপলোড করুন। ফাইল ডাউনলোড না করেই সরাসরি ব্রাউজারে দেখা যাবে।")
     
-    # ক্যাটাগরি ও তারিখ সিলেক্টর
     col1, col2, col3 = st.columns(3)
     with col1:
         category = st.selectbox(
@@ -137,7 +123,6 @@ elif selected_menu == "📂 ফাইল ভিউয়ার ও আপলো�
 
     st.markdown("---")
     
-    # ফাইল আপলোড ইনপুট
     uploaded_file = st.file_uploader(
         f"'{category}' ক্যাটাগরির জন্য ফাইলটি নির্বাচন করুন (Excel, PDF, Word)", 
         type=["xlsx", "xls", "pdf", "docx"]
@@ -150,15 +135,13 @@ elif selected_menu == "📂 ফাইল ভিউয়ার ও আপলো�
         st.markdown("---")
         st.subheader("👁️ নথির ভেতরের তথ্য (Live View)")
 
-        # ১. এক্সেল ফাইল ভিউ
         if file_type in ["xlsx", "xls"]:
             try:
                 df = pd.read_excel(uploaded_file)
                 st.dataframe(df, use_container_width=True)
             except Exception:
-                st.error("এক্সেল ফাইলটি রেন্ডার করতে সমস্যা হচ্ছে। ফাইলটি সঠিকভাবে সংরক্ষিত আছে কি না চেক করুন।")
+                st.error("এক্সেল ফাইলটি রেন্ডার করতে সমস্যা হচ্ছে।")
 
-        # ২. ওয়ার্ড ফাইল ভিউ
         elif file_type == "docx":
             try:
                 doc = docx.Document(uploaded_file)
@@ -171,7 +154,6 @@ elif selected_menu == "📂 ফাইল ভিউয়ার ও আপলো�
             except Exception:
                 st.error("ওয়ার্ড ফাইলটি পড়তে সমস্যা হচ্ছে।")
 
-        # ৩. পিডিএফ ফাইল ভিউ
         elif file_type == "pdf":
             try:
                 base64_pdf = base64.b64encode(uploaded_file.read()).decode('utf-8')
@@ -203,7 +185,7 @@ elif selected_menu == "📢 নোটিশ ও অফিস আদেশ":
     
     st.write("• **০৩-০৮-২০২৬:** মাসিক সমন্বয় সভা সংক্রান্ত বিজ্ঞপ্তি প্রকাশ।")
     st.write("• **২৭-০৭-২০২৬:** ফ্যামিলি কার্ড স্বেচ্ছাসেবক নিয়োজিতকরণ সংশোধন সংক্রান্ত নোটিশ।")
-    st.write("• **১৫-০৬-২০২৬:** অডিট আপত্তি নিষ্পত্তি বিষয়ক জরুরি নির্দেশনা।")
+    st.write("• **১৫-ও৬-২০২৬:** অডিট আপত্তি নিষ্পত্তি বিষয়ক জরুরি নির্দেশনা।")
 
 # ==========================================
 # ৫. হেল্পডেস্ক ও যোগাযোগ
@@ -213,4 +195,4 @@ elif selected_menu == "⚙️ হেল্পডেস্ক ও যোগায
     st.write("**সমাজসেবা অধিদপ্তর**")
     st.write("সমাজসেবা ভবন, ই-৮/বি-১, আগারগাঁও, শেরেবাংলা নগর, ঢাকা-১২০৭।")
     st.write("📧 ইমেইল: info@dss.gov.bd")
-    st.write("🌐 ওয়েবসাইট: [dss.gov.bd](https://dss.gov.bd)")
+    st.write("🌐 ওয়েবসাইট: https://dss.gov.bd")
