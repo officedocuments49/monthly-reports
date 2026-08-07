@@ -177,6 +177,6 @@ with tab2:
             save_data(office_db)
             
             st.success(f"✅ '{doc_title}' সফলভাবে সেভ করা হয়েছে! এখন থেকে এই ক্যাটাগরিতে ক্লিক করলেই ফাইলটি পাওয়া যাবে।")
-            st.experimental_rerun()
+            st.rerun()  # সংশোধিত লাইন (st.experimental_rerun এর পরিবর্তে st.rerun)
         else:
             st.error("অনুগ্রহ করে নথির শিরোনাম লিখুন এবং একটি ফাইল নির্বাচন করুন।")
