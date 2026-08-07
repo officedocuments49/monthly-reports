@@ -114,41 +114,55 @@ st.success(f"📌 আপনি বর্তমানে নির্বাচি
 
 tab1, tab2 = st.tabs(["📂 এই ক্যাটাগরির সংরক্ষিত ফাইলসমূহ", "📤 নতুন ফাইল সেভ / আপলোড করুন"])
 
-# --- ট্যাব ১: সেভ করা ফাইল দেখার জায়গা ---
+# --- ট্যাব ১: সেভ করা ফাইল দেখার ও মোছার জায়গা ---
 with tab1:
     st.subheader(f"📑 '{current_name}' - এর সংরক্ষিত নথিপত্র")
     
     if current_key in office_db and len(office_db[current_key]) > 0:
         saved_items = office_db[current_key]
+        
+        # রিভার্স লুপ যাতে নতুন আপলোড করা ফাইল সবার ওপরে থাকে
         for idx, item in enumerate(saved_items):
             with st.expander(f"📄 {item['title']} ({item['month']} {item['year']})"):
                 st.write(f"**নথির নাম:** {item.get('file_name', 'অজ্ঞাত ফাইল')}")
                 st.write(f"**বিবরণ/নোট:** {item.get('note', 'কোনো নোট নেই')}")
                 
-                # ফাইল ডেটা ও ডাউনলোড
+                # ফাইল ডাউনলোড ও ডিলিট বাটন
                 if "file_data" in item:
                     try:
-                        file_bytes = base64.b64decode(item["file_data"])
-                        f_type = item.get("file_type", "pdf")
-                        
-                        # ১. সরাসরি ডাউনলোড বাটন
+                        file_bytes = base64.b64encode(item["file_data"].encode('utf-8')) if isinstance(item["file_data"], str) else base64.b64decode(item["file_data"])
+                    except Exception:
+                        file_bytes = b""
+
+                    f_type = item.get("file_type", "pdf")
+                    
+                    btn_col1, btn_col2 = st.columns([2, 1])
+                    
+                    with btn_col1:
                         st.download_button(
-                            label=f"📥 {item['title']} ফাইলটি ডাউনলোড করুন",
-                            data=file_bytes,
+                            label=f"📥 {item['title']} ডাউনলোড করুন",
+                            data=base64.b64decode(item["file_data"]),
                             file_name=item.get('file_name', 'document.pdf'),
                             mime=f"application/{f_type}",
                             key=f"dl_{current_key}_{idx}"
                         )
+                    
+                    with btn_col2:
+                        # ফাইল ডিলিট বাটন
+                        if st.button(f"🗑️ ফাইলটি মুছে ফেলুন", key=f"del_{current_key}_{idx}"):
+                            # লিস্ট থেকে ফাইল রিমুভ করা
+                            office_db[current_key].pop(idx)
+                            save_data(office_db)
+                            st.success("✅ নথিটি সফলভাবে মুছে ফেলা হয়েছে!")
+                            st.rerun()
                         
-                        st.markdown("---")
-                        
-                        # ২. PDF প্রিভিউ দেখার চেষ্টা (ব্রাউজার সাপোর্ট করলে নিচে দেখাবে)
-                        if f_type == "pdf":
-                            st.caption("👁️ নিচে ফাইল প্রিভিউ দেখুন (যদি আপনার ব্রাউজার সাপোর্ট করে):")
-                            pdf_display = f'<embed src="data:application/pdf;base64,{item["file_data"]}" width="100%" height="500" type="application/pdf">'
-                            st.markdown(pdf_display, unsafe_allow_html=True)
-                    except Exception:
-                        st.error("ফাইলটি লোড করতে সমস্যা হয়েছে।")
+                st.markdown("---")
+                
+                # PDF প্রিভিউ
+                if item.get("file_type") == "pdf":
+                    pdf_display = f'<embed src="data:application/pdf;base64,{item["file_data"]}" width="100%" height="450" type="application/pdf">'
+                    st.markdown(pdf_display, unsafe_allow_html=True)
+
     else:
         st.warning("এই ক্যাটাগরিতে এখনো কোনো ফাইল বা তথ্য জমা রাখা হয়নি। 'নতুন ফাইল সেভ / আপলোড করুন' ট্যাবে গিয়ে ফাইল যোগ করুন।")
 
