@@ -6,142 +6,140 @@ from datetime import datetime
 
 # --- পেজ সেটআপ (সরকারী জাতীয় বাতায়ন থিম) ---
 st.set_page_config(
-    page_title="সমাজসেবা অধিদপ্তর - ডিজিটাল নথি ও রিপোর্ট ড্যাশবোর্ড",
+    page_title="সমাজসেবা অধিদপ্তর (DSS) - ডিজিটাল পোর্টাল",
     page_icon="🟢",
     layout="wide"
 )
 
-# --- কাস্টম সিএসএস স্টাইলিং ---
+# --- কাস্টম সিএসএস স্টাইলিং (জাতীয় বাতায়ন হেডার ডিজাইন) ---
 st.markdown("""
     <style>
-    .main-header {
+    .top-gov-bar {
         background-color: #006a4e;
         color: white;
-        padding: 15px 20px;
-        border-radius: 5px;
-        text-align: center;
+        padding: 12px 20px;
+        border-radius: 4px;
         border-bottom: 4px solid #f42a41;
         margin-bottom: 15px;
     }
-    .notice-board {
-        background-color: #fff3cd;
-        border-left: 5px solid #ffc107;
-        padding: 10px 15px;
-        border-radius: 3px;
-        font-size: 14px;
-        margin-bottom: 20px;
+    .top-gov-title {
+        font-size: 26px;
+        font-weight: bold;
+        margin: 0;
+        color: #ffffff;
     }
-    .card-box {
+    .top-gov-sub {
+        font-size: 13px;
+        margin: 0;
+        color: #f1f1f1;
+    }
+    .section-header {
+        background-color: #e9ecef;
+        padding: 8px 12px;
+        border-left: 5px solid #006a4e;
+        border-radius: 3px;
+        font-weight: bold;
+        margin-bottom: 15px;
+    }
+    .info-box {
         background-color: #f8f9fa;
-        border: 1px solid #e9ecef;
+        border: 1px solid #dee2e6;
         padding: 15px;
-        border-radius: 8px;
-        text-align: center;
-        box-shadow: 0 2px 4px rgba(0,0,0,0.05);
+        border-radius: 5px;
+        margin-bottom: 10px;
     }
     </style>
 """, unsafe_allow_html=True)
 
-# --- টপ হেডার ---
+# --- শীর্ষ ব্যানার ---
 st.markdown("""
-    <div class="main-header">
-        <h3 style="margin:0; color:#fff;">গণপ্রজাতন্ত্রী বাংলাদেশ সরকার</h3>
-        <h1 style="margin:5px 0; color:#fff; font-size:28px;">সমাজসেবা অধিদপ্তর (DSS)</h1>
-        <p style="margin:0; font-size:14px;">ডিজিটাল তথ্য ফাইল ব্যবস্থাপনা ও রিপোর্ট ড্যাশবোর্ড</p>
+    <div class="top-gov-bar">
+        <div style="display: flex; align-items: center; justify-content: space-between;">
+            <div>
+                <p class="top-gov-sub">গণপ্রজাতন্ত্রী বাংলাদেশ সরকার</p>
+                <h1 class="top-gov-title">সমাজসেবা অধিদপ্তর (DSS)</h1>
+                <p class="top-gov-sub">সমাজকল্যাণ মন্ত্রণালয় | ডিজিটাল ফাইল ব্যবস্থাপনা ও তথ্য পোর্টাল</p>
+            </div>
+        </div>
     </div>
 """, unsafe_allow_html=True)
 
-# --- সাইডবার মেনু ---
-st.sidebar.image("https://upload.wikimedia.org/wikipedia/commons/8/84/Government_Seal_of_Bangladesh.svg", width=90)
-st.sidebar.title("📌 প্রধান মেনু")
-st.sidebar.markdown("---")
+# --- মূল ড্রপডাউন নেভিগেশন মেনুবার (ড্যাশবোর্ডের উপরে) ---
+col_m1, col_m2 = st.columns([1, 2])
 
-selected_menu = st.sidebar.radio(
-    "মেনু নির্বাচন করুন:",
-    [
-        "🏠 হোম / এক নজরে",
-        "📂 ফাইল ভিউয়ার ও আপলোডার",
-        "📄 অডিট ও ফরওয়ার্ডিং নথি",
-        "📢 নোটিশ ও অফিস আদেশ",
-        "⚙️ হেল্পডেস্ক ও যোগাযোগ"
-    ]
-)
+with col_m1:
+    main_menu = st.selectbox(
+        "📌 প্রধান মেনু নির্বাচন করুন:",
+        [
+            "🏠 হোম / এক নজরে",
+            "📂 নথি ও ফাইল ভিউয়ার (আপলোড)",
+            "📊 পরিস্থিতি ও সামাজিক সুরক্ষা",
+            "💰 আর্থিক ও বাজেট তথ্য",
+            "💼 নিয়োগ ও সেবা",
+            "📞 যোগাযোগ ও স্থান"
+        ]
+    )
 
-st.sidebar.markdown("---")
-st.sidebar.info("💡 **জরুরি কল:** ৩৩৩ (সরকারি তথ্য ও সেবা) | ১০৯৮ (শিশু সহায়তা)")
+with col_m2:
+    # ড্রপডাউন মেনু সিলেক্ট করার পর সাব-ক্যাটাগরি
+    if main_menu == "📊 পরিস্থিতি ও সামাজিক সুরক্ষা":
+        sub_menu = st.selectbox("🔹 সাব-মেনু (পরিস্থিতি):", ["বয়স্ক ভাতা পরিস্থিতি", "প্রতিবন্ধী ভাতা তথ্য", "শিশু সুরক্ষা সেবা"])
+    elif main_menu == "💰 আর্থিক ও বাজেট তথ্য":
+        sub_menu = st.selectbox("🔹 সাব-মেনু (আর্থিক):", ["অনুদানের আর্থিক বিবরণী", "বার্ষিক বাজেট ও অডিট", "প্রকল্প ব্যয়"])
+    elif main_menu == "💼 নিয়োগ ও সেবা":
+        sub_menu = st.selectbox("🔹 সাব-মেনু (নিয়োগ):", ["চলতি নিয়োগ বিজ্ঞপ্তি", "ফলাফল ও রোল নম্বর", "সেবা প্রদান প্রতিশ্রুতি (UCAS)"])
+    elif main_menu == "📞 যোগাযোগ ও স্থান":
+        sub_menu = st.selectbox("🔹 সাব-মেনু (যোগাযোগ):", ["অধিদপ্তর কার্যালয়", "জেলা সমাজসেবা কার্যালয়সমূহ", "জরুরি হটলাইন"])
+    else:
+        sub_menu = "সাধারণ তথ্য"
+
+st.markdown("---")
 
 # ==========================================
 # ১. হোম / এক নজরে
 # ==========================================
-if selected_menu == "🏠 হোম / এক নজরে":
-    st.markdown("""
-        <div class="notice-board">
-            <b>📢 সর্বশেষ সংবাদ / নোটিশ:</b> সমাজসেবা অধিদপ্তরের সব ধরণের অফিসিয়াল ফাইল, অডিট রিপোর্ট ও ফরওয়ার্ডিং লেটার সরাসরি আপলোড ও ভিউ সিস্টেম চালু করা হয়েছে।
-        </div>
-    """, unsafe_allow_html=True)
+if main_menu == "🏠 হোম / এক নজরে":
+    st.markdown('<div class="section-header">📢 সাধারণ নোটিশ ও হালনাগাদ বার্তা</div>', unsafe_allow_html=True)
+    st.info("অফিসের সব অডিট রিপোর্ট, ফরওয়ার্ডিং চিঠি, ও সরকারি নথি ক্যাটাগরি অনুসারে সরাসরি ফাইল ভিউয়ারে দেখতে 'নথি ও ফাইল ভিউয়ার' সিলেক্ট করুন।")
 
-    st.subheader("📊 অফিসিয়াল কার্যক্রম ও ই-সেবা সংক্ষেপ")
-    
-    col1, col2, col3, col4 = st.columns(4)
-    with col1:
-        st.markdown('<div class="card-box"><h4>অডিট রিপোর্ট</h4><h2 style="color:#006a4e;">১২ টি</h2></div>', unsafe_allow_html=True)
-    with col2:
-        st.markdown('<div class="card-box"><h4>ফরওয়ার্ডিং চিঠি</h4><h2 style="color:#006a4e;">৪৫ টি</h2></div>', unsafe_allow_html=True)
-    with col3:
-        st.markdown('<div class="card-box"><h4>মাসিক অগ্রগতি</h4><h2 style="color:#006a4e;">৮ টি</h2></div>', unsafe_allow_html=True)
-    with col4:
-        st.markdown('<div class="card-box"><h4>অন্যান্য নথি</h4><h2 style="color:#006a4e;">২৩ টি</h2></div>', unsafe_allow_html=True)
-
-    st.markdown("---")
-    st.markdown("### 📋 প্রধান সেবাসমূহ (ই-সেবা বাতায়ন)")
-    
-    s_col1, s_col2, s_col3 = st.columns(3)
-    with s_col1:
-        st.success("👴 **সামাজিক নিরাপত্তা কর্মসূচী**\n* বয়স্ক ভাতা\n* বিধবা ও স্বামী নিগৃহীতা ভাতা")
-    with s_col2:
-        st.info("♿ **প্রতিবন্ধিতা বিষয়াবলী**\n* প্রতিবন্ধী ভাতা ও শিক্ষা উপবৃত্তি\n* প্রতিবন্ধিতা সনাক্তকরণ জরিপ")
-    with s_col3:
-        st.warning("🧒 **শিশু সুরক্ষা সেবা**\n* সরকারি শিশু পরিবার\n* চাইল্ড হেল্পলাইন ১০৯৮")
+    st.subheader("📊 সমাজসেবা অধিদপ্তরের কার্যক্রম এক নজরে")
+    k1, k2, k3, k4 = st.columns(4)
+    k1.metric("মোট উপকারভোগী", "১.২ কোটি+", "+৫ লাখ এই বছর")
+    k2.metric("আর্থিক বরাদ্দ", "১০,৫০০ কোটি ৳", "২০২৫-২০২৬")
+    k3.metric("জেলা কার্যালয়", "৬৪ টি", "সারাদেশে")
+    k4.metric("উপজেলা অফিস", "৪৯২ টি", "সক্রিয় সেবা")
 
 # ==========================================
-# ২. ফাইল ভিউয়ার ও আপলোডার (প্রধান কাজের জায়গা)
+# ২. নথি ও ফাইল ভিউয়ার (প্রধান আপলোড অপশন)
 # ==========================================
-elif selected_menu == "📂 ফাইল ভিউয়ার ও আপলোডার":
-    st.subheader("📂 অফিস নথি আপলোড ও সরাসরি ভিউয়ার")
-    st.caption("Excel, Word, অথবা PDF ফাইল আপলোড করুন। ফাইল ডাউনলোড না করেই সরাসরি ব্রাউজারে দেখা যাবে।")
+elif main_menu == "📂 নথি ও ফাইল ভিউয়ার (আপলোড)":
+    st.markdown('<div class="section-header">📂 ফাইল আপলোড ও সরাসরি ভিউয়ার (ডাউনলোড ছাড়া)</div>', unsafe_allow_html=True)
     
     col1, col2, col3 = st.columns(3)
     with col1:
-        category = st.selectbox(
-            "📁 নথির ধরন/ক্যাটাগরি", 
-            ["অডিট রিপোর্ট", "ফরওয়ার্ডিং চিঠি", "মাসিক সমন্বয় সভা", "অফিস আদেশ / নোটিশ", "প্রকল্প ও বাজেট", "অন্যান্য"]
-        )
+        category = st.selectbox("📁 নথির ক্যাটাগরি", ["অডিট রিপোর্ট", "ফরওয়ার্ডিং চিঠি", "মাসিক সভা", "অফিস আদেশ", "অন্যান্য"])
     with col2:
         month = st.selectbox("📅 মাস", ["জানুয়ারি", "ফেব্রুয়ারি", "মার্চ", "এপ্রিল", "মে", "জুন", "জুলাই", "আগস্ট", "সেপ্টেম্বর", "অক্টোবর", "নভেম্বর", "ডিসেম্বর"])
     with col3:
         year = st.selectbox("🗓️ বছর", [2026, 2025, 2024])
 
-    st.markdown("---")
-    
-    uploaded_file = st.file_uploader(
-        f"'{category}' ক্যাটাগরির জন্য ফাইলটি নির্বাচন করুন (Excel, PDF, Word)", 
-        type=["xlsx", "xls", "pdf", "docx"]
-    )
+    uploaded_file = st.file_uploader("আপনার ফাইল সিলেক্ট করুন (Excel, PDF, Word)", type=["xlsx", "xls", "pdf", "docx"])
 
     if uploaded_file is not None:
         file_type = uploaded_file.name.split(".")[-1].lower()
-        
-        st.success(f"✅ সফলভাবে ফাইলের তথ্য পড়া হয়েছে: **{uploaded_file.name}** ({category} - {month} {year})")
+        st.success(f"✅ নির্বাচিত ফাইল: **{uploaded_file.name}** ({category} - {month} {year})")
         st.markdown("---")
-        st.subheader("👁️ নথির ভেতরের তথ্য (Live View)")
+        st.subheader("👁️ লাইভ ফাইল ভিউ (Live Content):")
 
+        # এক্সেল ভিউ
         if file_type in ["xlsx", "xls"]:
             try:
                 df = pd.read_excel(uploaded_file)
                 st.dataframe(df, use_container_width=True)
             except Exception:
-                st.error("এক্সেল ফাইলটি রেন্ডার করতে সমস্যা হচ্ছে।")
+                st.error("এক্সেল ফাইলটি রেন্ডার করা যাচ্ছে না।")
 
+        # ওয়ার্ড ভিউ
         elif file_type == "docx":
             try:
                 doc = docx.Document(uploaded_file)
@@ -150,49 +148,54 @@ elif selected_menu == "📂 ফাইল ভিউয়ার ও আপলো�
                     for para in full_text:
                         st.write(f"• {para}")
                 else:
-                    st.warning("ওয়ার্ড ফাইলের ভেতরে কোনো টেক্সট পাওয়া যায়নি।")
+                    st.warning("ফাইলের ভেতরে কোনো লিখা পাওয়া যায়নি।")
             except Exception:
                 st.error("ওয়ার্ড ফাইলটি পড়তে সমস্যা হচ্ছে।")
 
+        # পিডিএফ ভিউ
         elif file_type == "pdf":
             try:
                 base64_pdf = base64.b64encode(uploaded_file.read()).decode('utf-8')
                 pdf_display = f'<iframe src="data:application/pdf;base64,{base64_pdf}" width="100%" height="800" type="application/pdf"></iframe>'
                 st.markdown(pdf_display, unsafe_allow_html=True)
             except Exception:
-                st.error("PDF ফাইলটি প্রদর্শন করা যাচ্ছে না।")
+                st.error("PDF প্রদর্শন করা যাচ্ছে না।")
 
 # ==========================================
-# ৩. অডিট ও ফরওয়ার্ডিং নথি (আর্কাইভ)
+# ৩. পরিস্থিতি ও সামাজিক সুরক্ষা
 # ==========================================
-elif selected_menu == "📄 অডিট ও ফরওয়ার্ডিং নথি":
-    st.subheader("📄 সংরক্ষিত অডিট ও ফরওয়ার্ডিং ফাইল আর্কাইভ")
-    st.markdown("এখানে পূর্বে সংরক্ষিত সব ধরণের অফিসিয়ালী প্রসেস করা নথিপত্র ফিল্টার করে দেখার সুবিধা রয়েছে।")
-    
-    f_col1, f_col2 = st.columns(2)
-    with f_col1:
-        st.selectbox("ক্যাটাগরি ফিল্টার", ["সকল ক্যাটাগরি", "অডিট রিপোর্ট", "ফরওয়ার্ডিং চিঠি", "মাসিক সভা"])
-    with f_col2:
-        st.text_input("🔍 ফাইল নাম দিয়ে খুঁজুন")
-        
-    st.info("📌 বর্তমানে নতুন ফাইলগুলো 'ফাইল ভিউয়ার ও আপলোডার' মেনু থেকে লাইভ প্রিভিউ করা যাবে।")
+elif main_menu == "📊 পরিস্থিতি ও সামাজিক সুরক্ষা":
+    st.markdown(f'<div class="section-header">📊 পরিস্থিতি বিবরণী: {sub_menu}</div>', unsafe_allow_html=True)
+    if sub_menu == "বয়স্ক ভাতা পরিস্থিতি":
+        st.write("• **উপকারভোগীর সংখ্যা:** ৫৮ লাখ১ হাজার জন।")
+        st.write("• **ভাতার হার:** মাসিক ৬০০ টাকা হারে সরাসরি জিটুপি (G2P) পদ্ধতিতে প্রদান।")
+    elif sub_menu == "প্রতিবন্ধী ভাতা তথ্য":
+        st.write("• **উপকারভোগীর সংখ্যা:** ২৯ লাখ জন।")
+        st.write("• **ভাতার হার:** মাসিক ৮৫০ টাকা।")
+    else:
+        st.write("• চাইল্ড হেল্পলাইন ১০৯৮ এবং সরকারি শিশু পরিবারের হালনাগাদ তথ্য।")
 
 # ==========================================
-# ৪. নোটিশ ও অফিস আদেশ
+# ৪. আর্থিক ও বাজেট তথ্য
 # ==========================================
-elif selected_menu == "📢 নোটিশ ও অফিস আদেশ":
-    st.subheader("📢 হালনাগাদ নোটিশ ও অফিস আদেশ")
-    
-    st.write("• **০৩-০৮-২০২৬:** মাসিক সমন্বয় সভা সংক্রান্ত বিজ্ঞপ্তি প্রকাশ।")
-    st.write("• **২৭-০৭-২০২৬:** ফ্যামিলি কার্ড স্বেচ্ছাসেবক নিয়োজিতকরণ সংশোধন সংক্রান্ত নোটিশ।")
-    st.write("• **১৫-ও৬-২০২৬:** অডিট আপত্তি নিষ্পত্তি বিষয়ক জরুরি নির্দেশনা।")
+elif main_menu == "💰 আর্থিক ও বাজেট তথ্য":
+    st.markdown(f'<div class="section-header">💰 আর্থিক হিসাব ও বিবরণী: {sub_menu}</div>', unsafe_allow_html=True)
+    st.write("• অর্থ বছরের বাজেট বরাদ্দ ও ছাড়কৃত অর্থের হিসাব।")
+    st.write("• বার্ষিক অভ্যন্তরীণ ও বহিঃঅডিট রিপোর্ট সংক্রান্ত সারসংক্ষেপ।")
 
 # ==========================================
-# ৫. হেল্পডেস্ক ও যোগাযোগ
+# ৫. নিয়োগ ও সেবা
 # ==========================================
-elif selected_menu == "⚙️ হেল্পডেস্ক ও যোগাযোগ":
-    st.subheader("📞 অফিস যোগাযোগ ও হটলাইন")
-    st.write("**সমাজসেবা অধিদপ্তর**")
-    st.write("সমাজসেবা ভবন, ই-৮/বি-১, আগারগাঁও, শেরেবাংলা নগর, ঢাকা-১২০৭।")
-    st.write("📧 ইমেইল: info@dss.gov.bd")
-    st.write("🌐 ওয়েবসাইট: https://dss.gov.bd")
+elif main_menu == "💼 নিয়োগ ও সেবা":
+    st.markdown(f'<div class="section-header">💼 সমাজসেবা অধিদপ্তর নিয়োগ সংক্রান্ত: {sub_menu}</div>', unsafe_allow_html=True)
+    st.write("• সমাজসেবা অধিদপ্তরের বিভিন্ন ক্যাডারে নিয়োগ বিজ্ঞপ্তি ও আবেদনের লিংক।")
+    st.write("• লিখিত ও মৌখিক পরীক্ষার সময়সূচী ও আসন বিন্যাস।")
+
+# ==========================================
+# ৬. যোগাযোগ ও স্থান
+# ==========================================
+elif main_menu == "📞 যোগাযোগ ও স্থান":
+    st.markdown(f'<div class="section-header">📞 যোগাযোগ ও দপ্তর অবস্থান: {sub_menu}</div>', unsafe_allow_html=True)
+    st.write("**সমাজসেবা ভবন**")
+    st.write("ই-৮/বি-১, আগারগাঁও, শেরেবাংলা নগর, ঢাকা-১২০৭।")
+    st.write("☎️ ফোন: +৮৮-০২-৫৫০০৭৩০৩ | 📧 ইমেইল: info@dss.gov.bd")
